@@ -1,0 +1,38 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: postgresql
+  namespace: postgresql
+spec:
+  interval: 5m
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  chart:
+    spec:
+      chart: postgresql
+      version: "0.2.1"
+      sourceRef:
+        kind: HelmRepository
+        name: postgresql
+        namespace: postgresql
+      interval: 1m
+  values:
+    image:
+      tag: 9.6.19
+    postgresql:
+      username: ${POSTGRESQL_USERNAME:=username}
+      password: ${POSTGRESQL_PASSWORD:=password}
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: postgresql
+  namespace: postgresql
+spec:
+  url: https://cetic.github.io/helm-charts
+  interval: 10m
